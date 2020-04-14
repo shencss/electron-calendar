@@ -21,6 +21,10 @@
         <span>:</span>
         <div class="second">{{second}}</div>
       </div>
+      <div class="weather">
+        <div>天气：{{weather.type}}</div>
+        <div>温度：{{weather.low.slice(2)}}~{{weather.high.slice(2)}}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -35,7 +39,9 @@
         day: '',
         hour: '',
         minute: '',
-        second: ''
+        second: '',
+        period: '',
+        weather: null
       }
     },
     methods: {
@@ -53,11 +59,47 @@
         setTimeout(() => {
           this.refreshDate()
         }, 1000)
+      },
+      judgePeriod (day) {
+        if (day >= (this.period + 2) && day <= (this.period - 2)) {
+          // todo：大姨妈提示
+        }
+      },
+      judgeOvertime (hour, minute, second) {
+        if (hour === 18 && minute === 30 && second === 0) {
+          // todo：下班提示
+        } else if (hour === 19 && minute === 0 && second === 0) {
+          // todo：吃饭提示
+        } else if (hour === 21 && minute === 0 && second === 0) {
+          // todo：加班安慰
+        } else if (hour === 23 && minute === 0 && second === 0) {
+          // todo：超级辛苦
+        }
+      },
+      judgeBirthday (month, day) {
+        if (month === 8 && day === 4) {
+          // todo：生日快乐
+        }
+      },
+      greeting (hour, minute, second) {
+        // todo：早晚午安
+      },
+      ticket (date, hour, minute, second) {
+        // todo：车票提示
+      },
+      anniversary (year, month, day) {
+        // todo：纪念日
+      },
+      weather (tomorrow) {
+        // todo：带伞提示
       }
     },
     created () {
+      this.period = +localStorage.getItem('period') || 22
       this.refreshDate()
-      axios.get('https://www.tianqiapi.com/api/?version=v1&&cityid=101280301')
+      axios.get('http://wthrcdn.etouch.cn/weather_mini?citykey=101280101').then(res => {
+        this.weather = res.data.data.forecast[0]
+      })
     }
   }
 </script>
@@ -70,6 +112,7 @@
   }
   body { font-family: 'Source Sans Pro', sans-serif; }
   .calendar {
+    position: relative;
     box-shadow: 0 0 10px rgba(0, 0, 0, .5);
     height: 100%;
     width:100%;
@@ -89,6 +132,7 @@
     -webkit-app-region: no-drag;
     cursor: pointer;
     transition: all linear .1s;
+    user-select: none;
   }
   .title  span:hover {
     transform: scale(1.5);
@@ -161,6 +205,13 @@
     justify-content: center;
     margin-top: 8px;
     font-size: 28px;
+    color: #fff;
+    font-weight: bold;
+  }
+  .weather {
+    position: absolute;
+    top: 70px;
+    font-size: 12px;
     color: #fff;
     font-weight: bold;
   }
